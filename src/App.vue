@@ -157,6 +157,7 @@ export default {
     top: 126px;
     left: 50px;
     width: 311px;
+    height:calc(100% - 200px);
     background: #b3b7b4
   }
   @media screen and (max-width: 767px){

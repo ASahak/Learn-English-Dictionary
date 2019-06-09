@@ -822,35 +822,38 @@ export default {
   margin: auto;
 
 }
-.allWords:before {
-  content:"";
-  position: absolute;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 4px;
-  z-index: 222;
-  background: #c1c1c1;
-  margin: auto;
-  bottom: -3px;
-}
-.allWords:after {
-  content:"";
-  position: absolute;
-  left: 0;
-  right: 0;
-  width: 1px;
-  height: 100%;
-  background: #000;
-  margin: auto;
-  top: 0
+.allWords > li:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 1px;
+    height: 100%;
+    background: #000;
+    margin: auto;
+    top: 0;
 }
 .allWords {
   position: relative;
   padding: 0 10px !important;
   background: #fff;
-      margin-bottom: 0;
+  margin-bottom: 0;
+  overflow-x: hidden;
+  height:calc(100% - 122px);
   margin-top: 4px;
+}
+.allWords::-webkit-scrollbar {
+    width: 4px;
+}
+
+.allWords::-webkit-scrollbar-thumb {
+    background: #b3b7b4;
+    border-radius: 5px;
+}
+.allWords::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 2px #b3b7b4;
+    box-shadow: inset 0 0 2px #b3b7b4;
+    border-radius: 5px;
 }
 .allWords .rightItem{
   padding-left: 7px;
