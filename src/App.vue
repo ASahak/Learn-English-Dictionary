@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="mobilePhone"> 
+    <div class="mobilePhone">
       <div class="clock">{{hours +' : ' + minutes}}</div>
       <img src="./assets/mobile.png" alt="" class="d-none d-md-block">
       <header class="d-flex align-items-center justify-content-between">
@@ -8,11 +8,11 @@
           <div class="adminPanel">
             <img src="./assets/admin.jpg" alt="">
             <span>Arthur</span>
-            <i class="fa fa-caret-down" aria-hidden="true" @click="logOutDown"></i> 
+            <i class="fa fa-caret-down" aria-hidden="true" @click="logOutDown"></i>
           </div>
           <a  @click="logOut" class="logOut" ref="mySpan">Log out</a>
-          
-        </div> 
+
+        </div>
         <router-link v-else to="/admin">Log in</router-link>
         <router-link to="/">
           <img src="./assets/logo.png" alt="" class="img-fluid">
@@ -20,10 +20,10 @@
         <router-link to="/add-word">
           Add Word
         </router-link>
-      </header> 
+      </header>
       <router-view class="routerChange" ></router-view>
     </div>
-    
+
   </div>
 </template>
 
@@ -66,19 +66,19 @@ export default {
       this.minutes= (new Date().getMinutes() < 10) ? '0'+new Date().getMinutes(): new Date().getMinutes()
     }
     setInterval(() => updateCurrentTime(), 1 * 1000);
-   
+
     firebase.auth().onAuthStateChanged(user =>{
       if(user){
         auth.isLogined = true
         this.isLogined = auth.isLogined
-      } 
+      }
       else{
         auth.isLogined = false
         this.isLogined = auth.isLogined
       }
     })
   }
-  
+
 }
 </script>
 

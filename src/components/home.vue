@@ -1,6 +1,6 @@
 <template>
-    <div> 
-      
+    <div>
+
       <div class="langBar d-flex justify-content-between p-2">
         <span class="languages">
           <span :vModel="langObj.lang1" v-text="lang1"> </span>
@@ -13,8 +13,8 @@
         <label for="findWord" @click="focusSearchWord($event)" ref="labelDownBlur">Find word....</label>
         <input type="search"  @keyup="findWord($event.target.value)" @blur="labelDown($event)" @focus="labelSame($event)" ref="focusFind">
         <span class="lnr lnr-cross crossValue" ref="crossValue" v-show="valueNotString" @click="deleteValue"></span>
-        <ul ref="findWords" class="searchResult" type="none" v-show="isSearchWord">
-          <li  v-for="(word) in SearchWords" :key="word.value"  :style="isReverseStyle">
+        <ul ref="findWords" :class="['searchResult', isReverse && 'direction-reverse']" type="none" v-show="isSearchWord">
+          <li v-for="(word) in SearchWords" :key="word['.key']">
             <span ref="injectHtml1" :dataTxt1="word.english"></span>
             <span ref="injectHtml2" :dataTxt2="word.armenian"></span>
             <img v-if="filterBoolean" src="../assets/dotted.png" @click="editBlockParentShow($event, word)" alt="" style="max-width:20px; cursor:pointer; position:absolute; top:2px; right:0">
@@ -22,23 +22,24 @@
               <span class="lnr lnr-thumbs-up" @click="iLearnedThis($event, word['.key'])" :class="{'like': likeClass}"></span>
               <span class="lnr lnr-pencil" @click="editDataItem($event)"></span>
               <span class="lnr lnr-cross" @click="deleteDataItem(word['.key'], $event, true)"></span>
-            </div> 
+            </div>
             <div class="editBlockChange editBlockViaSearch" ref="heightEdit" :style="topEditBlock">
               <label >English</label>
-              <input type="text" class="" v-model="word.english">  
+              <input type="text" class="" v-model="word.english">
               <label >Armenian</label>
-              <input type="text" class="" v-model="word.armenian" >  
+              <input type="text" class="" v-model="word.armenian" >
               <button @click="saveDataItem(word['.key'], word.english, word.armenian, $event, true)">Save</button>
             </div>
-          </li>  
+          </li>
         </ul>
       </div>
       <div class="pagination-filter d-flex align-items-center justify-content-between">
-        <div class="filterBlock w-50" > 
+        <div class="filterBlock w-50" >
           <div class="activeFilter" @click="filteSub = !filteSub"><span v-text="activeFilter" class="changesText"></span><i class="fa fa-caret-down" aria-hidden="true"></i></div>
-          <ul class="dropDown p-0" type="none" v-show="filteSub">   
+          <ul class="dropDown p-0" type="none" v-show="filteSub">
             <li @click="bindText($event.target.innerText)">All Words</li>
-            <li @click="bindText($event.target.innerText)">Added Date</li>
+            <li @click="bindText($event.target.innerText)">Added Date ↑</li>
+            <li @click="bindText($event.target.innerText)">Added Date ↓</li>
             <li  @click="bindText($event.target.innerText)">A-Z</li>
             <li  @click="bindText($event.target.innerText)">Z-A</li>
             <li v-if="filterBoolean"  @click="bindText($event.target.innerText)">Learned</li>
@@ -58,23 +59,23 @@
       <div  style=" background-color: #eae5e5; padding: 100px 0;"   v-show="!preLoader">
         <img src="../assets/preloader.gif" alt="" style="max-width: 140px; margin: auto;display: block; padding: 30px;">
       </div>
-      <ul class="allWords p-0" type="none" ref="bottomNumber" v-show="preLoader">
-        <li v-for="word in wordsCollection20" :key="word.value" :style="isReverseStyle">
+      <ul :class="['allWords p-0', isReverse && 'direction-reverse']" type="none" ref="bottomNumber" v-show="preLoader">
+        <li v-for="word in wordsCollection20" :key="word['.key']">
           <span class="leftItem">{{word.english}}</span><span class="rightItem">{{word.armenian}}</span>
           <img v-if="filterBoolean" src="../assets/dotted.png" @click="editBlockParentShow($event, word)" alt="" style="max-width:20px; cursor:pointer; position:absolute; top:2px; right:0">
           <div class="editBlock" ref="threeBlock">
             <span class="lnr lnr-thumbs-up" @click="iLearnedThis($event, word['.key'])" :class="{'like': likeClass}"></span>
             <span class="lnr lnr-pencil" @click="editDataItem($event)"></span>
             <span class="lnr lnr-cross" @click="deleteDataItem(word['.key'], $event, false)"></span>
-          </div> 
+          </div>
           <div class="editBlockChange" ref="heightEdit" :style="topEditBlock">
             <label >English</label>
-            <input type="text" class="" v-model="word.english">  
+            <input type="text" class="" v-model="word.english">
             <label >Armenian</label>
-            <input type="text" class="" v-model="word.armenian" >  
+            <input type="text" class="" v-model="word.armenian" >
             <button @click="saveDataItem(word['.key'], word.english, word.armenian, $event, false)">Save</button>
-          </div> 
-           
+          </div>
+
         </li>
       </ul>
     </div>
@@ -137,7 +138,7 @@ export default {
     //     this.wordsCollection = wordsCollection;
     //   });
       this.wordsCollection = this.wordData
-      
+
       var clearInterData = setInterval(()=>{
         if(this.wordsCollection[0] != undefined){
           clearInterval(clearInterData);
@@ -147,7 +148,7 @@ export default {
             if(this.wordsCollection[i]){
               this.wordsCollection20.push(this.wordsCollection[i])
             }
-          } 
+          }
         }
       }, 1000);
       window.addEventListener('click', this.onClickWindow)
@@ -175,24 +176,24 @@ export default {
     reverseLang(){
       this.$refs.focusFind.value = '';
       this.valueNotString = false;
-      
+
       this.$refs.labelDownBlur.style.top = 10+'px'
       this.$refs.labelDownBlur.style.fontSize = 13+'px';
       this.isSearchWord = false;
-      this.lang1 = (this.lang1 == "Arm")?"Eng":"Arm";
-      this.lang2 = (this.lang2 == "Eng")?"Arm":"Eng";
+      this.lang1 = (this.lang1 === "Arm")?"Eng":"Arm";
+      this.lang2 = (this.lang2 === "Eng")?"Arm":"Eng";
       this.isReverse  = !this.isReverse;
       if(this.isReverse){
-        this.isReverseStyle = Object.assign({
-          flexDirection:'row-reverse'
-        })
+      //   this.isReverseStyle = Object.assign({
+      //     flexDirection:'row-reverse'
+      //   })
       this.langObj.lang1 = 'armenian'
       }
       else{
       this.langObj.lang1 = 'english'
-        this.isReverseStyle = Object.assign({
-          flexDirection:'row'
-        })
+        // this.isReverseStyle = Object.assign({
+        //   flexDirection:'row'
+        // })
       }
     },
     findWord(event){
@@ -204,7 +205,7 @@ export default {
         this.isSearchWord = false;
       }
       var empObj = {};
-     
+
       var items = []
       this.wordsCollection.map((elm)=>{
         empObj = Object.assign({
@@ -277,10 +278,10 @@ export default {
                 item.innerHTML = attr2.toLowerCase().replace(event.toLowerCase(), "<b>"+ event.toLowerCase() +"</b>");
             })
           }
-          
+
         }, 10)
         //  arr[i][self.langObj.lang1] =doc.body[0]
-        
+
     },
     onClickWindow(event){
       if(event.target.className != 'changesText'){
@@ -290,20 +291,20 @@ export default {
       }
     },
     prev(){
-      
+
       if(this.pageBegan>1){
       Array.prototype.map.call(this.$refs.threeBlock, item=>{
         item.style.display = 'none'
       })
       this.pageBegan--;
       this.pageCount-=20;
-      this.wordsCollection20 = [] 
+      this.wordsCollection20 = []
       for(let i =this.pageCount-20; i<this.pageCount; i++){
-        
+
         if(this.wordsCollection[i]){
           this.wordsCollection20.push(this.wordsCollection[i])
         }
-      } 
+      }
      }
     },
    next(){
@@ -311,16 +312,16 @@ export default {
      if(this.pageBegan<this.pagination){
       Array.prototype.map.call(this.$refs.threeBlock, item=>{
         item.style.display = 'none'
-      
+
       })
      this.pageBegan++;
         this.pageCount+=20;
-        this.wordsCollection20 = [] 
+        this.wordsCollection20 = []
         for(let i =this.pageCount-20; i<this.pageCount; i++){
           if(this.wordsCollection[i]){
             this.wordsCollection20.push(this.wordsCollection[i])
           }
-        } 
+        }
      }
    },
     labelSame(event){
@@ -345,28 +346,28 @@ export default {
       })
       }
     },
-    
+
     bindText(event){
       this.activeFilter  = event;
         function dynamicSort(property) {
-          var sortOrder = 1;
+          let sortOrder = 1;
           if(property[0] === "-") {
               sortOrder = -1;
               property = property.substr(1);
           }
           return function (a,b) {
-              if(sortOrder == -1){
+              if(sortOrder === -1){
                   return b[property].toString().localeCompare(a[property].toString());
               }else{
                   return a[property].toString().localeCompare(b[property].toString());
-              }        
+              }
           }
       }
-    
 
-      if(event == 'All Words'){
+
+      if(event === 'All Words'){
         this.pageBegan = 1;
-        this.pageCount = 20
+        this.pageCount = 20;
         this.wordsCollection20 = [];
         this.wordsCollection = this.wordData;
         for(let i =0; i<20; i++){
@@ -374,22 +375,22 @@ export default {
         }
         this.pagination = Math.ceil(this.wordsCollection.length/20);
       }
-      if(event == 'Not Learned'){ 
+      if(event === 'Not Learned'){
         this.pageBegan = 1;
-        this.pageCount = 20
+        this.pageCount = 20;
         Array.prototype.map.call(this.$refs.threeBlock, item=>{
           item.style.display = 'none'
-        })
+        });
         this.wordsCollection20 = [];
         const wordsCollection = [];
         this.wordsCollection = this.wordData;
-        this.wordsCollection.forEach( (item, ind)=>{
+        this.wordsCollection.forEach( item =>{
           if(!item.isLearned){
             wordsCollection.push(item)
           }
-        })
-        this.wordsCollection = wordsCollection
-    
+        });
+        this.wordsCollection = wordsCollection;
+
          for(let i =0; i<20; i++){
            if(wordsCollection[i]){
              this.wordsCollection20.push(wordsCollection[i])
@@ -397,22 +398,22 @@ export default {
         }
         this.pagination = Math.ceil(wordsCollection.length/20);
       }
-      if(event == 'Learned'){
+      if(event === 'Learned'){
         this.pageBegan = 1;
-        this.pageCount = 20
+        this.pageCount = 20;
         Array.prototype.map.call(this.$refs.threeBlock, item=>{
           item.style.display = 'none'
-        })
+        });
         this.wordsCollection20 = [];
         const wordsCollection = [];
         this.wordsCollection = this.wordData;
-        this.wordsCollection.forEach( (item, ind)=>{
+        this.wordsCollection.forEach(item =>{
           if(item.isLearned){
             wordsCollection.push(item)
           }
-        })
-        this.wordsCollection = wordsCollection
-    
+        });
+        this.wordsCollection = wordsCollection;
+
          for(let i =0; i<20; i++){
            if(wordsCollection[i]){
               this.wordsCollection20.push(wordsCollection[i])
@@ -420,27 +421,28 @@ export default {
         }
         this.pagination = Math.ceil(wordsCollection.length/20);
       }
-      if(event == 'Added Date'){
+      if(event.indexOf('Added Date') !== -1){
         this.pageBegan = 1;
-        this.pageCount = 20
+        this.pageCount = 20;
          Array.prototype.map.call(this.$refs.threeBlock, item=>{
           item.style.display = 'none'
-        })
+        });
         // this.wordsCollection = this.dataWd;
-        this.wordsCollection.sort(dynamicSort("publication"));
+        let newSortData = this.wordsCollection.sort(dynamicSort("publication"));
+        newSortData = event === 'Added Date ↑' ? newSortData : newSortData.reverse();
         this.wordsCollection20 = [];
         for(let i =0; i < 20; i++){
-          if(this.wordsCollection[i]){
-            this.wordsCollection20.push(this.wordsCollection[i])
+          if(newSortData[i]){
+            this.wordsCollection20.push(newSortData[i])
           }
         }
       }
-      if(event == 'A-Z'){
+      if(event === 'A-Z'){
         this.pageBegan = 1;
-        this.pageCount = 20
+        this.pageCount = 20;
          Array.prototype.map.call(this.$refs.threeBlock, item=>{
           item.style.display = 'none'
-        })
+        });
         this.wordsCollection.sort(dynamicSort("english"));
         this.wordsCollection20 = [];
         for(let i =0; i<20; i++){
@@ -449,14 +451,14 @@ export default {
            }
         }
       }
-      if(event == 'Z-A'){
+      if(event === 'Z-A'){
         this.pageBegan = 1;
         this.pageCount = 20
          Array.prototype.map.call(this.$refs.threeBlock, item=>{
           item.style.display = 'none'
-        })
+        });
         this.wordsCollection.sort(dynamicSort("english"));
-        this.wordsCollection.reverse()
+        this.wordsCollection.reverse();
         this.wordsCollection20 = [];
         for(let i =0; i < 20; i++){
            if(this.wordsCollection[i]){
@@ -468,10 +470,10 @@ export default {
     editDataItem(event){
       Array.prototype.map.call(this.$refs.heightEdit, item=>{
         item.style.display="none"
-      })
+      });
       event.target.offsetParent.nextElementSibling.style.display = (event.target.offsetParent.nextElementSibling.style.display == "block") ? 'none':'block'
       if(event.target.getBoundingClientRect().top + 170 > this.$refs.bottomNumber.getBoundingClientRect().bottom){
-      
+
         this.topEditBlock = Object.assign({
           top:'inherit',
           bottom:24+'px',
@@ -483,7 +485,7 @@ export default {
           top:23+'px',
           opacity:1
         })
-        
+
       }
       event.target.offsetParent.style.display="none"
     },
@@ -513,32 +515,32 @@ export default {
     },
     deleteDataItem(id, event, reload){
       var self = this;
-      Array.prototype.map.call(this.wordsCollection, (item, ind)=>{
-        if(item['.key'] == id){
+      Array.prototype.map.call(this.wordsCollection, item =>{
+        if(item['.key'] === id){
           this.wordsCollection.splice(this.wordsCollection.indexOf(item), 1)
         }
-      }) 
-      Array.prototype.map.call(this.wordsCollection20, (item, ind)=>{
-        if(item['.key'] == id){
+      });
+      Array.prototype.map.call(this.wordsCollection20, item =>{
+        if(item['.key'] === id){
           if(this.wordsCollection.length > this.pageCount-1){
-            this.wordsCollection20.push(this.wordsCollection[this.pageCount-1])  
+            this.wordsCollection20.push(this.wordsCollection[this.pageCount-1])
           }
           this.wordsCollection20.splice(this.wordsCollection20.indexOf(item), 1)
         }
-      }) 
+      });
       if(this.wordsCollection20.length === 0){
         if(this.pageBegan > 0){
           this.pageBegan--
         }
-        this.wordsCollection20 = []
-        this.pageCount = this.wordsCollection.length 
+        this.wordsCollection20 = [];
+        this.pageCount = this.wordsCollection.length;
         for(let i = this.wordsCollection.length- 20 ; i < this.wordsCollection.length; i++){
           if(this.wordsCollection[i]){
             this.wordsCollection20.push(this.wordsCollection[i])
           }
         }
       }
-      
+
       db.collection("words").doc(id).delete().then(function() {
           console.log("Document successfully deleted!");
           self.pagination = Math.ceil(self.wordsCollection.length/20);
@@ -547,30 +549,30 @@ export default {
               window.location.reload()
             }
           }, 1000)
-          
+
       }).catch(function(error) {
           console.error("Error removing document: ", error);
       });
-      event.target.offsetParent.style.display = (event.target.offsetParent.style.display == "block") ? 'none':'block'
+      event.target.offsetParent.style.display = (event.target.offsetParent.style.display === "block") ? 'none':'block'
     },
     editBlockParentShow(event, item){
-      if(document.querySelector('.activeEdit'))document.querySelector('.activeEdit').classList.remove('activeEdit')
+      if(document.querySelector('.activeEdit'))document.querySelector('.activeEdit').classList.remove('activeEdit');
        this.topEditBlock = Object.assign({
         top:'inherit',
         bottom:'inherit',
         opacity:0
-      })
+      });
       db.collection("words").doc(item['.key']).get().then(res=>{
-        this.isLike = res.data().isLearned
+        this.isLike = res.data().isLearned;
         event.target.nextElementSibling.style.display = 'block';
-      })
-      event.target.classList.add('activeEdit')
-      event.target.nextElementSibling.classList.add('selected')
+      });
+      event.target.classList.add('activeEdit');
+      event.target.nextElementSibling.classList.add('selected');
       Array.prototype.map.call(this.$refs.threeBlock, item=>{
-        if(item.className.split(" ")[1] != 'selected')
-        item.style.display="none"
+        if(item.className.split(" ")[1] !== 'selected')
+        item.style.display="none";
         item.className="editBlock"
-      })
+      });
       window.addEventListener('click', (e)=>{
         if(e.target.closest('.activeEdit')){
           return
@@ -709,6 +711,7 @@ export default {
   .dropDown li {
     cursor: pointer;
     font-size: 12px;
+    white-space: nowrap;
     padding: 1px 0;
     box-shadow: 0px 1px 0px 0px #ccc;
   }
@@ -737,7 +740,7 @@ export default {
   }
   .filterBlock {
       padding: 10px 8px;
-      
+
   }
   .activeFilter span{
        white-space: nowrap;
@@ -855,12 +858,17 @@ export default {
     box-shadow: inset 0 0 2px #b3b7b4;
     border-radius: 5px;
 }
+.allWords .leftItem{
+  width: calc(50% - 5px);
+}
 .allWords .rightItem{
-  padding-left: 7px;
+  padding-left: 5px;
   display: block;
+  width: calc(50% - 15px);
+  margin-left: 5px;
 }
 .allWords > li > span{
-        width: 50%;
+    width: 50%;
     padding: 0 5px;
     display: block;
     height: 22px;
@@ -869,7 +877,7 @@ export default {
     white-space: nowrap;
 }
  .allWords > li > span::-webkit-scrollbar {
-    height: 1px;
+    height: 0px;
 }
 
 .allWords > li > span::-webkit-scrollbar-thumb {
@@ -884,10 +892,21 @@ export default {
   align-items: center;
   position: relative;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 0;
   font-size: 12px;
   border-bottom: 1px dotted;
+}
+.direction-reverse > li {
+  flex-direction: row-reverse;
+}
+.direction-reverse > li .rightItem{
+  display: block;
+  width: 50%;
+  margin-left: 0;
+}
+.direction-reverse > li .leftItem{
+  width: 50%;
 }
 .like{
      color: #149632 !important;
